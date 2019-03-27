@@ -9,8 +9,15 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
 
+/**
+ * Configuration file for the Data source.
+ */
 @Configuration
 public class TasksDataSourceConfig {
+    /**
+     * This method returns Data source instance.
+     * @return Data source instance
+     */
     @Bean
     @FlywayDataSource
     @Qualifier("tasksDataSource")

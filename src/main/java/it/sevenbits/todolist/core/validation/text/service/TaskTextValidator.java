@@ -10,7 +10,7 @@ public class TaskTextValidator implements ITaskTextValidator {
      * @return Boolean value that represents validation result.
      */
     @Override
-    public boolean isValidTaskID(final String text) {
+    public boolean isValidTaskText(final String text) {
         return text != null;
     }
 }

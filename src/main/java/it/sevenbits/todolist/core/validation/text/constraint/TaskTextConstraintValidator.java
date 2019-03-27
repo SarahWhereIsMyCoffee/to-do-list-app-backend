@@ -35,6 +35,6 @@ public class TaskTextConstraintValidator
     @Override
     public boolean isValid(final String id,
                            final ConstraintValidatorContext constraintValidatorContext) {
-        return taskTextValidator.isValidTaskID(id);
+        return taskTextValidator.isValidTaskText(id);
     }
 }

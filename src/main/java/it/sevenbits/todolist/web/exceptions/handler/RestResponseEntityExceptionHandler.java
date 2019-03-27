@@ -25,9 +25,7 @@ public class RestResponseEntityExceptionHandler
      *
      * @param ex Instance of exception to handle.
      * @param request WebRequest instance.
-     * @return Response sent to request source. It contains:
-     *      - header "Content-Type": "application/json;charset=UTF-8";
-     *      - status code: "400 - Bad Request".
+     * @return Response sent to request source. It contains information about content type and HTTP status
      */
     @ExceptionHandler
             (value = {
@@ -35,55 +33,74 @@ public class RestResponseEntityExceptionHandler
             InvalidTaskTextException.class})
     protected ResponseEntity<Object> invalidStatus(
             final RuntimeException ex, final WebRequest request) {
-        String bodyOfResponse = "Invalid task parameters";
 
-        return handleExceptionInternal(ex, bodyOfResponse,
-                new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+        return handleExceptionInternal(
+                ex,
+                null,
+                new HttpHeaders(),
+                HttpStatus.BAD_REQUEST,
+                request
+        );
     }
     /**
      * Method that handles InvalidTaskIDException exceptions.
      *
      * @param ex Instance of exception to handle.
      * @param request WebRequest instance.
-     * @return Response sent to request source. It contains:
-     *      - header "Content-Type": "application/json;charset=UTF-8";
-     *      - status code: "400 - Bad Request".
+     * @return Response sent to request source. It contains information about content type and HTTP status.
      */
     @ExceptionHandler
             (value = {InvalidTaskIDException.class})
     protected ResponseEntity<Object> invalidID(
             final RuntimeException ex, final WebRequest request) {
-        String bodyOfResponse = "Invalid task ID";
 
-        return handleExceptionInternal(ex, bodyOfResponse,
-                new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+        return handleExceptionInternal(
+                ex,
+                null,
+                new HttpHeaders(),
+                HttpStatus.BAD_REQUEST,
+                request
+        );
     }
     /**
      * Method that handles TaskNotFoundException exceptions.
      *
      * @param ex Instance of exception to handle.
      * @param request WebRequest instance.
-     * @return Response sent to request source. It contains:
-     *      - header "Content-Type": "application/json;charset=UTF-8";
-     *      - status code: "400 - Bad Request".
+     * @return Response sent to request source. It contains information about content type and HTTP status.
      */
     @ExceptionHandler
             (value = {TaskNotFoundException.class})
     protected ResponseEntity<Object> invalidTask(
             final RuntimeException ex, final WebRequest request) {
-        String bodyOfResponse = "Task not found";
 
-        return handleExceptionInternal(ex, bodyOfResponse,
-                new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+        return handleExceptionInternal(
+                ex,
+                null,
+                new HttpHeaders(),
+                HttpStatus.NOT_FOUND,
+                request
+        );
     }
 
+    /**
+     * This method is used when user call for a forbidden method.
+     *
+     * @param ex Instance of exception to handle.
+     * @param request WebRequest instance.
+     * @return Response sent to request source. It contains information about content type and HTTP status.
+     */
     @ExceptionHandler
             (value = {UnavailableMethodException.class})
     protected ResponseEntity<Object> unavailableMethod(
             final RuntimeException ex, final WebRequest request) {
-        String bodyOfResponse = "Task not found";
 
-        return handleExceptionInternal(ex, bodyOfResponse,
-                new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+        return handleExceptionInternal(
+                ex,
+                null,
+                new HttpHeaders(),
+                HttpStatus.FORBIDDEN,
+                request
+        );
     }
 }

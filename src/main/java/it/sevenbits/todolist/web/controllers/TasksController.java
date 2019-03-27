@@ -66,10 +66,10 @@ public class TasksController {
      * Method that returns list of all tasks from task repository.
      * That method handles GET request to "/".
 
-     * @return Response that contains:
-     *         - header "Content-Type": "application/json;charset=UTF-8";
-     *         - body: task list filtered by passed status (or "inbox" status if null or empty string was passed);
-     *         - status code: 200 - OK.
+     * @return Response that contains information about:
+     *                                -Request body
+     *                                -Content type
+     *                                -HTTP status
      */
     @GetMapping
     @ResponseBody
@@ -77,6 +77,7 @@ public class TasksController {
         ResponseEntity.status(HttpStatus.OK);
         return ResponseEntity
                 .ok()
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .body(dataBaseTasksRepository.getAllTasks());
     }
 
@@ -98,7 +99,6 @@ public class TasksController {
                 .build()
                 .toUri();
 
-        ResponseEntity.status(HttpStatus.CREATED);
         return ResponseEntity
                 .created(location)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -124,7 +124,6 @@ public class TasksController {
             throw new TaskNotFoundException();
         }
 
-        ResponseEntity.status(HttpStatus.OK);
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -151,10 +150,8 @@ public class TasksController {
         }
         dataBaseTasksRepository.deleteTask(id);
 
-        ResponseEntity.status(HttpStatus.OK);
         return ResponseEntity
                 .ok()
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .build();
     }
 
@@ -178,12 +175,12 @@ public class TasksController {
             throw new InvalidTaskIDException();
         }
 
-        if (!taskStatusValidator.isValidTaskID(updateTaskRequest.getStatus())) {
-            throw new InvalidTaskIDException();
+        if (!taskStatusValidator.isValidTaskStatus(updateTaskRequest.getStatus())) {
+            throw new InvalidTaskStatusException();
         }
 
-        if (!taskTextValidator.isValidTaskID(updateTaskRequest.getText())) {
-            throw new InvalidTaskIDException();
+        if (!taskTextValidator.isValidTaskText(updateTaskRequest.getText())) {
+            throw new InvalidTaskTextException();
         }
 
         if (dataBaseTasksRepository.getTask(id) == null) {
@@ -198,7 +195,6 @@ public class TasksController {
                         .orElseThrow(InvalidTaskStatusException::new)
         ));
 
-        ResponseEntity.status(HttpStatus.NO_CONTENT);
         return ResponseEntity
                 .noContent()
                 .build();

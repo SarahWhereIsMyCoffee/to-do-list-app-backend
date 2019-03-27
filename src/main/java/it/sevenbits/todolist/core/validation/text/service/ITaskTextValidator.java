@@ -13,5 +13,5 @@ public interface ITaskTextValidator {
      * @param text Task text to validate.
      * @return Boolean value that represents validation result.
      */
-    boolean isValidTaskID(String text);
+    boolean isValidTaskText(String text);
 }

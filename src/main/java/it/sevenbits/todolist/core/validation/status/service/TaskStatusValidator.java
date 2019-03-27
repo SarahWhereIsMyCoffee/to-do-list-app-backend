@@ -11,7 +11,7 @@ public class TaskStatusValidator implements ITaskStatusValidator {
      * @return Boolean value that represents validation result.
      */
     @Override
-    public boolean isValidTaskID(final String status) {
+    public boolean isValidTaskStatus(final String status) {
         String statusToDo = "ToDo";
         String statusDone = "Done";
         return status.equals(statusDone) || status.equals(statusToDo);

@@ -10,4 +10,4 @@ package:
 	mvn package
 
 run:
-	java -jar ./target/TaskManagerApp-1.0-SNAPSHOT.jar
+	java -jar ./target/to-do-list-1.0-SNAPSHOT.jar
