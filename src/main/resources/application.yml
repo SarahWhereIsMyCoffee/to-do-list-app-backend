@@ -1,0 +1,9 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    tasks:
+      jdbcUrl: jdbc:postgresql://localhost:5432/todolist-database
+      username: user
+      password: password
+      driver-class-name: org.postgresql.Driver

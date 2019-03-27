@@ -39,7 +39,7 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/tasks")
 public class TasksController {
-    private final ITasksRepository tasksRepository;
+    private final ITasksRepository dataBaseTasksRepository;
     private final ITaskIDValidator taskIDValidator;
     private final ITaskStatusValidator taskStatusValidator;
     private final ITaskTextValidator taskTextValidator;
@@ -47,16 +47,16 @@ public class TasksController {
     /**
      * Class constructor.
      *
-     * @param tasksRepository ITaskRepository instance.
+     * @param dataBaseTasksRepository ITaskRepository instance.
      * @param taskIDValidator ITaskIDValidator service instance.
      * @param taskStatusValidator ITaskStatusValidator service instance.
      * @param taskTextValidator ITaskTextValidator service instance.
      */
-    public TasksController(final ITasksRepository tasksRepository,
+    public TasksController(final ITasksRepository dataBaseTasksRepository,
                            final ITaskIDValidator taskIDValidator,
                            final ITaskStatusValidator taskStatusValidator,
                            final ITaskTextValidator taskTextValidator) {
-        this.tasksRepository = tasksRepository;
+        this.dataBaseTasksRepository = dataBaseTasksRepository;
         this.taskIDValidator = taskIDValidator;
         this.taskStatusValidator = taskStatusValidator;
         this.taskTextValidator = taskTextValidator;
@@ -77,7 +77,7 @@ public class TasksController {
         ResponseEntity.status(HttpStatus.OK);
         return ResponseEntity
                 .ok()
-                .body(tasksRepository.getAllTasks());
+                .body(dataBaseTasksRepository.getAllTasks());
     }
 
     /**
@@ -94,7 +94,7 @@ public class TasksController {
     public ResponseEntity<Task> create(@Valid @RequestBody final AddTaskRequest addTaskRequest) {
         URI location = UriComponentsBuilder
                 .fromPath("/tasks/")
-                .path(String.valueOf(tasksRepository.addTask(addTaskRequest)))
+                .path(String.valueOf(dataBaseTasksRepository.addTask(addTaskRequest)))
                 .build()
                 .toUri();
 
@@ -119,7 +119,7 @@ public class TasksController {
             throw new InvalidTaskIDException();
         }
 
-        Task currentTask = tasksRepository.getTask(id);
+        Task currentTask = dataBaseTasksRepository.getTask(id);
         if (currentTask == null) {
             throw new TaskNotFoundException();
         }
@@ -145,11 +145,11 @@ public class TasksController {
             throw new InvalidTaskIDException();
         }
 
-        Task currentTask = tasksRepository.getTask(id);
+        Task currentTask = dataBaseTasksRepository.getTask(id);
         if (currentTask == null) {
             throw new TaskNotFoundException();
         }
-        tasksRepository.deleteTask(id);
+        dataBaseTasksRepository.deleteTask(id);
 
         ResponseEntity.status(HttpStatus.OK);
         return ResponseEntity
@@ -173,6 +173,7 @@ public class TasksController {
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> patchTask(@PathVariable("id") final String id,
                                             @Valid @RequestBody final UpdateTaskRequest updateTaskRequest) {
+
         if (!taskIDValidator.isValidTaskID(id)) {
             throw new InvalidTaskIDException();
         }
@@ -185,11 +186,11 @@ public class TasksController {
             throw new InvalidTaskIDException();
         }
 
-        if (tasksRepository.getTask(id) == null) {
+        if (dataBaseTasksRepository.getTask(id) == null) {
             throw new TaskNotFoundException();
         }
 
-        tasksRepository.replaceTask(id, new Task(
+        dataBaseTasksRepository.replaceTask(id, new Task(
                 id,
                 Optional.ofNullable(updateTaskRequest.getText())
                         .orElseThrow(InvalidTaskTextException::new),

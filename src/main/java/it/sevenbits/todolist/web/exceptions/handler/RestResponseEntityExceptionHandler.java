@@ -4,6 +4,7 @@ import it.sevenbits.todolist.web.exceptions.InvalidTaskIDException;
 import it.sevenbits.todolist.web.exceptions.InvalidTaskStatusException;
 import it.sevenbits.todolist.web.exceptions.InvalidTaskTextException;
 import it.sevenbits.todolist.web.exceptions.TaskNotFoundException;
+import it.sevenbits.todolist.web.exceptions.UnavailableMethodException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -69,6 +70,16 @@ public class RestResponseEntityExceptionHandler
     @ExceptionHandler
             (value = {TaskNotFoundException.class})
     protected ResponseEntity<Object> invalidTask(
+            final RuntimeException ex, final WebRequest request) {
+        String bodyOfResponse = "Task not found";
+
+        return handleExceptionInternal(ex, bodyOfResponse,
+                new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler
+            (value = {UnavailableMethodException.class})
+    protected ResponseEntity<Object> unavailableMethod(
             final RuntimeException ex, final WebRequest request) {
         String bodyOfResponse = "Task not found";
 
