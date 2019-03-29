@@ -30,9 +30,10 @@ public class DatabaseTasksRepository implements ITasksRepository {
      */
     @Override
     public String addTask(final AddTaskRequest addTaskRequest) {
+        String taskStatus = "inbox";
         Task task = new Task(UUID.randomUUID().toString(),
                 addTaskRequest.getText(),
-                addTaskRequest.getStatus());
+                taskStatus);
 
         jdbcOperations.update(
                 "INSERT INTO task (id, status, text) VALUES (?, ?, ?)",

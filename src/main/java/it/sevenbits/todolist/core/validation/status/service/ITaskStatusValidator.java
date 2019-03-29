@@ -13,5 +13,5 @@ public interface ITaskStatusValidator {
      * @param status Task status to validate.
      * @return Boolean value that represents validation result.
      */
-    boolean isValidTaskStatus(String status);
+    boolean isValidStatus(String status);
 }

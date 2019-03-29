@@ -8,9 +8,9 @@ import javax.validation.ConstraintValidatorContext;
 
 /**
  * Implementation of ConstraintValidator interface that provides functionality for task status validation
- * using @ITaskStatusConstraint annotation and TaskStatusValidator service instance.
+ * using @TaskStatusConstraint annotation and TaskStatusValidator service instance.
  */
-public class TaskStatusConstraintValidator implements ConstraintValidator<ITaskStatusConstraint, String> {
+public class TaskStatusConstraintValidator implements ConstraintValidator<TaskStatusConstraint, String> {
     private final ITaskStatusValidator taskStatusValidator;
     /**
      * Class constructor.
@@ -33,6 +33,6 @@ public class TaskStatusConstraintValidator implements ConstraintValidator<ITaskS
      */
     @Override
     public boolean isValid(final String status, final ConstraintValidatorContext constraintValidatorContext) {
-        return taskStatusValidator.isValidTaskStatus(status);
+        return taskStatusValidator.isValidStatus(status);
     }
 }

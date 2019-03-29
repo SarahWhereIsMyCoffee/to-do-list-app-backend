@@ -1,12 +1,34 @@
 package it.sevenbits.todolist.core.model;
 
+import it.sevenbits.todolist.core.validation.id.constraint.TaskIDConstraint;
+import it.sevenbits.todolist.core.validation.status.constraint.TaskStatusConstraint;
+import it.sevenbits.todolist.core.validation.id.constraint.TaskIDConstraint;
+import it.sevenbits.todolist.core.validation.status.constraint.TaskStatusConstraint;
+
+import javax.validation.constraints.NotBlank;
+
 /**
  * This class presents a model used for creating of JSON objects.
  *
  */
 public class Task {
+    /**
+     *
+     */
+    @NotBlank
+    @TaskIDConstraint
     private final String id;
+    /**
+     *
+     */
+    @NotBlank
     private final String text;
+
+    /**
+     *
+     */
+    @NotBlank
+    @TaskStatusConstraint
     private final String status;
 
     /**

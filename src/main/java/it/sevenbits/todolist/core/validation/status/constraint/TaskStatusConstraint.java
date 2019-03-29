@@ -1,4 +1,4 @@
-package it.sevenbits.todolist.core.validation.id.constraint;
+package it.sevenbits.todolist.core.validation.status.constraint;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -8,13 +8,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for task id validation using ConstraintValidator interface implementation.
+ * Annotation for task status validation using ConstraintValidator interface implementation.
  */
-
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = TaskIDConstraintValidator.class)
-public @interface ITaskIDConstraint {
+@Constraint(validatedBy = TaskStatusConstraintValidator.class)
+public @interface TaskStatusConstraint {
     /**
      * Attribute that represents error message.
      *

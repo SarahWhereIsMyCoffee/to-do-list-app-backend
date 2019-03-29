@@ -10,9 +10,7 @@ import it.sevenbits.todolist.web.model.AddTaskRequest;
 import it.sevenbits.todolist.web.model.UpdateTaskRequest;
 import it.sevenbits.todolist.core.validation.id.service.ITaskIDValidator;
 import it.sevenbits.todolist.core.validation.status.service.ITaskStatusValidator;
-import it.sevenbits.todolist.core.validation.text.service.ITaskTextValidator;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -39,27 +37,23 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/tasks")
 public class TasksController {
-    private final ITasksRepository dataBaseTasksRepository;
+    private final ITasksRepository tasksRepository;
     private final ITaskIDValidator taskIDValidator;
     private final ITaskStatusValidator taskStatusValidator;
-    private final ITaskTextValidator taskTextValidator;
 
     /**
      * Class constructor.
      *
-     * @param dataBaseTasksRepository ITaskRepository instance.
+     * @param tasksRepository ITaskRepository instance.
      * @param taskIDValidator ITaskIDValidator service instance.
      * @param taskStatusValidator ITaskStatusValidator service instance.
-     * @param taskTextValidator ITaskTextValidator service instance.
      */
-    public TasksController(final ITasksRepository dataBaseTasksRepository,
+    public TasksController(final ITasksRepository tasksRepository,
                            final ITaskIDValidator taskIDValidator,
-                           final ITaskStatusValidator taskStatusValidator,
-                           final ITaskTextValidator taskTextValidator) {
-        this.dataBaseTasksRepository = dataBaseTasksRepository;
+                           final ITaskStatusValidator taskStatusValidator) {
+        this.tasksRepository = tasksRepository;
         this.taskIDValidator = taskIDValidator;
         this.taskStatusValidator = taskStatusValidator;
-        this.taskTextValidator = taskTextValidator;
     }
 
     /**
@@ -74,11 +68,10 @@ public class TasksController {
     @GetMapping
     @ResponseBody
     public ResponseEntity<List<Task>> getAllTasks() {
-        ResponseEntity.status(HttpStatus.OK);
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .body(dataBaseTasksRepository.getAllTasks());
+                .body(tasksRepository.getAllTasks());
     }
 
     /**
@@ -95,7 +88,7 @@ public class TasksController {
     public ResponseEntity<Task> create(@Valid @RequestBody final AddTaskRequest addTaskRequest) {
         URI location = UriComponentsBuilder
                 .fromPath("/tasks/")
-                .path(String.valueOf(dataBaseTasksRepository.addTask(addTaskRequest)))
+                .path(String.valueOf(tasksRepository.addTask(addTaskRequest)))
                 .build()
                 .toUri();
 
@@ -119,7 +112,7 @@ public class TasksController {
             throw new InvalidTaskIDException();
         }
 
-        Task currentTask = dataBaseTasksRepository.getTask(id);
+        Task currentTask = tasksRepository.getTask(id);
         if (currentTask == null) {
             throw new TaskNotFoundException();
         }
@@ -144,11 +137,11 @@ public class TasksController {
             throw new InvalidTaskIDException();
         }
 
-        Task currentTask = dataBaseTasksRepository.getTask(id);
+        Task currentTask = tasksRepository.getTask(id);
         if (currentTask == null) {
             throw new TaskNotFoundException();
         }
-        dataBaseTasksRepository.deleteTask(id);
+        tasksRepository.deleteTask(id);
 
         return ResponseEntity
                 .ok()
@@ -170,30 +163,32 @@ public class TasksController {
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Object> patchTask(@PathVariable("id") final String id,
                                             @Valid @RequestBody final UpdateTaskRequest updateTaskRequest) {
-
         if (!taskIDValidator.isValidTaskID(id)) {
             throw new InvalidTaskIDException();
         }
 
-        if (!taskStatusValidator.isValidTaskStatus(updateTaskRequest.getStatus())) {
+        if (updateTaskRequest.getStatus() != null
+                && !taskStatusValidator.isValidStatus(updateTaskRequest.getStatus())) {
             throw new InvalidTaskStatusException();
         }
 
-        if (!taskTextValidator.isValidTaskText(updateTaskRequest.getText())) {
+        if (updateTaskRequest.getText() != null
+                && updateTaskRequest.getText().equals("")) {
             throw new InvalidTaskTextException();
         }
 
-        if (dataBaseTasksRepository.getTask(id) == null) {
+        if (tasksRepository.getTask(id) == null) {
             throw new TaskNotFoundException();
         }
 
-        dataBaseTasksRepository.replaceTask(id, new Task(
-                id,
-                Optional.ofNullable(updateTaskRequest.getText())
-                        .orElseThrow(InvalidTaskTextException::new),
-                Optional.ofNullable(updateTaskRequest.getStatus())
-                        .orElseThrow(InvalidTaskStatusException::new)
-        ));
+        tasksRepository.replaceTask(id, new Task(
+                        id,
+                        Optional.ofNullable(updateTaskRequest.getText())
+                                .orElse(tasksRepository.getTask(id).getText()),
+                        Optional.ofNullable(updateTaskRequest.getStatus())
+                                .orElse(tasksRepository.getTask(id).getStatus())
+                )
+        );
 
         return ResponseEntity
                 .noContent()

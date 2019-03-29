@@ -32,10 +32,11 @@ public class TasksRepository implements ITasksRepository {
     @Override
     public String addTask(final AddTaskRequest addTaskRequest) {
         UUID taskID = UUID.randomUUID();
+        String taskStatus = "inbox";
         taskMap.put(taskID.toString(),
                 new Task(taskID.toString(),
                         addTaskRequest.getText(),
-                        addTaskRequest.getStatus()));
+                        taskStatus));
         return taskID.toString();
     }
 
@@ -60,7 +61,7 @@ public class TasksRepository implements ITasksRepository {
     }
 
     /**
-     * This method removes a "Task" model from repository taken by ID.
+     * This method removes a "Task" model from repository by ID.
      *
      * @param id String parameter
      * @return deleted "Task" model
@@ -72,7 +73,7 @@ public class TasksRepository implements ITasksRepository {
 
     /**
      /**
-     * This method replaces an old "Task" model from repository by ID.
+     * This method replaces a "Task" model from repository by ID.
      *
      * @param id String parameter for define a "Task" model we wanna to replace.
      * @param newTask new "Task" model

@@ -2,18 +2,12 @@ package it.sevenbits.todolist.web.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.sevenbits.todolist.core.validation.status.constraint.ITaskStatusConstraint;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * This model separates query logic of updating new task from application business logic
  */
 public class UpdateTaskRequest {
-    @NotBlank
     private String text;
-    @ITaskStatusConstraint
-    @NotBlank
     private String status;
 
     /**

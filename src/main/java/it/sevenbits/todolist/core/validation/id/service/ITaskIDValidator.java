@@ -1,6 +1,7 @@
 package it.sevenbits.todolist.core.validation.id.service;
 
 import org.springframework.stereotype.Service;
+
 /**
  * Service provides task id validation.
  */
