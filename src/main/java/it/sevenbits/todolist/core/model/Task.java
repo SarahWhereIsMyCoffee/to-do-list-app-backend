@@ -29,13 +29,18 @@ public class Task {
     @TaskStatusConstraint
     private final String status;
 
-
     /**
      *
      */
     @NotBlank
     private final String createdAt;
 
+
+    /**
+     *
+     */
+    @NotBlank
+    private final String updatedAt;
     /**
      * Model constructor.
      *
@@ -46,11 +51,13 @@ public class Task {
     public Task(final String id,
                 final String text,
                 final String status,
-                final String createdAt) {
+                final String createdAt,
+                final String updatedAt) {
         this.id = id;
         this.text = text;
         this.status = status;
         this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     /**
@@ -89,4 +96,7 @@ public class Task {
         return createdAt;
     }
 
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
 }

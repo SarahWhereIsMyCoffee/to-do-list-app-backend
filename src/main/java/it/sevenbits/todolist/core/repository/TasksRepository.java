@@ -40,12 +40,14 @@ public class TasksRepository implements ITasksRepository {
                 "yyyy-MM-dd'T'H:mm:ss+00:00");
 
         String createdAt = formatForDateNow.format(dateNow);
+        String updatedAt = "-----";
 
         taskMap.put(taskID.toString(),
                 new Task(taskID.toString(),
                         addTaskRequest.getText(),
                         taskStatus,
-                        createdAt));
+                        createdAt,
+                        updatedAt));
         return taskID.toString();
     }
 

@@ -17,6 +17,7 @@ public class DatabaseTasksRepository implements ITasksRepository {
 
     /**
      * Constructor of TasksRepository class.
+     *
      * @param jdbcOperations JdbcOperations instance that presents an interface contains Data source instance
      */
     public DatabaseTasksRepository(final JdbcOperations jdbcOperations) {
@@ -37,37 +38,47 @@ public class DatabaseTasksRepository implements ITasksRepository {
                 "yyyy-MM-dd'T'H:mm:ss+00:00");
 
         String createdAt = formatForDateNow.format(dateNow);
+        String updatedAt = "-----";
 
 
         Task task = new Task(UUID.randomUUID().toString(),
                 addTaskRequest.getText(),
                 taskStatus,
-                createdAt);
+                createdAt,
+                updatedAt);
 
         jdbcOperations.update(
-                "INSERT INTO task_V1 (id, text, status, createdAt) VALUES (?, ?, ?, ?)",
+                "INSERT INTO task_V2 (id, text, status, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)",
                 task.getId(),
                 task.getText(),
                 task.getStatus(),
-                task.getCreatedAt()
+                task.getCreatedAt(),
+                task.getUpdatedAt()
         );
 
         return task.getId();
     }
+
     /**
      * This method returns all the objects from data base.
+     *
      * @return "Task" list.
      */
     @Override
     public List<Task> getAllTasks() {
         return jdbcOperations.query(
-                "SELECT id, text, status, createdAt FROM task_V1",
+                "SELECT id, text, status, createdAt, updatedAt FROM task_V2",
                 (resultSet, i) -> {
                     String id = resultSet.getString("id");
                     String status = resultSet.getString("status");
                     String text = resultSet.getString("text");
                     String createdAt = resultSet.getString("createdAt");
-                    return new Task(id, status, text, createdAt);
+                    String updatedAt = resultSet.getString("updatedAt");
+                    return new Task(id,
+                            status,
+                            text,
+                            createdAt,
+                            updatedAt);
                 });
     }
 
@@ -80,12 +91,17 @@ public class DatabaseTasksRepository implements ITasksRepository {
     @Override
     public Task getTaskByID(final String id) {
         return jdbcOperations.queryForObject(
-                "SELECT id, text, status, createdAt FROM task_V1 WHERE id = ?",
+                "SELECT id, text, status, createdAt, updatedAt FROM task_V2 WHERE id = ?",
                 (resultSet, i) -> {
                     String status = resultSet.getString("status");
                     String text = resultSet.getString("text");
                     String createdAt = resultSet.getString("createdAt");
-                    return new Task(id, status, text, createdAt);
+                    String updatedAt = resultSet.getString("updatedAt");
+                    return new Task(id,
+                            status,
+                            text,
+                            createdAt,
+                            updatedAt);
                 },
                 id);
     }
@@ -99,25 +115,32 @@ public class DatabaseTasksRepository implements ITasksRepository {
     @Override
     public Task deleteTask(final String id) {
         final Task task = getTaskByID(id);
-        jdbcOperations.update("DELETE FROM task_V1 WHERE id = ?", id);
+        jdbcOperations.update("DELETE FROM task_V2 WHERE id = ?", id);
 
         return task;
     }
 
     /**
-     /**
+     * /**
      * This method update a "Task" model in data base by ID.
      *
-     * @param id String parameter for define a "Task" model we wanna to replace.
+     * @param id      String parameter for define a "Task" model we wanna to replace.
      * @param newTask new "Task" model
      * @return deleted "Task" model.
      */
     @Override
     public Task updateTask(final String id, final Task newTask) {
+        Date dateNow = new Date();
+        SimpleDateFormat formatForDateNow = new SimpleDateFormat(
+                "yyyy-MM-dd'T'H:mm:ss+00:00");
+
+        String updatedAt = formatForDateNow.format(dateNow);
+
         jdbcOperations.update(
-                "UPDATE task_V1 SET text = ?, status = ? WHERE id = ?",
+                "UPDATE task_V2 SET text = ?, status = ?, updatedAt = ? WHERE id = ?",
                 newTask.getText(),
                 newTask.getStatus(),
+                updatedAt,
                 id);
 
         return newTask;
