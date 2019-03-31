@@ -67,8 +67,16 @@ public class DatabaseTasksRepository implements ITasksRepository {
      * @return "Task" model.
      */
     @Override
-    public Task getTask(final String id) {
-        throw new UnavailableMethodException();
+    public Task getTaskByID(final String id) {
+        return jdbcOperations.queryForObject(
+                "SELECT id, text, status FROM task WHERE id = ?",
+                (resultSet, i) -> {
+                    String taskID = resultSet.getString(1);
+                    String taskText = resultSet.getString(2);
+                    String taskStatus = resultSet.getString(3);
+                    return new Task(taskID, taskText, taskStatus);
+                },
+                id);
     }
 
     /**
@@ -79,7 +87,10 @@ public class DatabaseTasksRepository implements ITasksRepository {
      */
     @Override
     public Task deleteTask(final String id) {
-        throw new UnavailableMethodException();
+        final Task task = getTaskByID(id);
+        jdbcOperations.update("DELETE FROM task WHERE id = ?", id);
+
+        return task;
     }
 
     /**
@@ -91,7 +102,13 @@ public class DatabaseTasksRepository implements ITasksRepository {
      * @return deleted "Task" model.
      */
     @Override
-    public Task replaceTask(final String id, final Task newTask) {
-        throw new UnavailableMethodException();
+    public Task updateTask(final String id, final Task newTask) {
+        jdbcOperations.update(
+                "UPDATE task SET text = ?, status = ? WHERE id = ?",
+                newTask.getText(),
+                newTask.getStatus(),
+                id);
+
+        return newTask;
     }
 }

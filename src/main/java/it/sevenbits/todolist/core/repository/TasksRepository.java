@@ -56,7 +56,7 @@ public class TasksRepository implements ITasksRepository {
      * @return "Task" model.
      */
     @Override
-    public Task getTask(final String id) {
+    public Task getTaskByID(final String id) {
         return taskMap.get(id);
     }
 
@@ -80,7 +80,7 @@ public class TasksRepository implements ITasksRepository {
      * @return deleted "Task" model.
      */
     @Override
-    public Task replaceTask(final String id, final Task newTask) {
+    public Task updateTask(final String id, final Task newTask) {
         return taskMap.replace(id, newTask);
     }
 }

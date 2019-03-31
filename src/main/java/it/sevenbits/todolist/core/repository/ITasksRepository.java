@@ -29,7 +29,7 @@ public interface ITasksRepository {
      * @param id String parameter.
      * @return "Task" model.
      */
-    Task getTask(final String id);
+    Task getTaskByID(final String id);
 
     /**
      * This method removes a "Task" model from repository taken by ID.
@@ -47,5 +47,5 @@ public interface ITasksRepository {
      * @param newTask new "Task" model
      * @return deleted "Task" model.
      */
-    Task replaceTask(final String id, final Task newTask);
+    Task updateTask(final String id, final Task newTask);
 }
