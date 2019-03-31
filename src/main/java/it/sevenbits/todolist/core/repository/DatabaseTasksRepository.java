@@ -5,6 +5,8 @@ import it.sevenbits.todolist.web.exceptions.UnavailableMethodException;
 import it.sevenbits.todolist.web.model.AddTaskRequest;
 import org.springframework.jdbc.core.JdbcOperations;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,15 +33,24 @@ public class DatabaseTasksRepository implements ITasksRepository {
     @Override
     public String addTask(final AddTaskRequest addTaskRequest) {
         String taskStatus = "inbox";
+        Date dateNow = new Date();
+        SimpleDateFormat formatForDateNow = new SimpleDateFormat(
+                "yyyy-MM-dd'T'H:mm:ss+00:00");
+
+        String createdAt = formatForDateNow.format(dateNow);
+
+
         Task task = new Task(UUID.randomUUID().toString(),
                 addTaskRequest.getText(),
-                taskStatus);
+                taskStatus,
+                createdAt);
 
         jdbcOperations.update(
-                "INSERT INTO task (id, status, text) VALUES (?, ?, ?)",
+                "INSERT INTO task_V1 (id, status, text, createdAt) VALUES (?, ?, ?, ?)",
                 task.getId(),
                 task.getText(),
-                task.getStatus()
+                task.getStatus(),
+                task.getCreatedAt()
         );
 
         return task.getId();
@@ -51,12 +62,13 @@ public class DatabaseTasksRepository implements ITasksRepository {
     @Override
     public List<Task> getAllTasks() {
         return jdbcOperations.query(
-                "SELECT id, status, text FROM task",
+                "SELECT id, status, text, createdAt FROM task_V1",
                 (resultSet, i) -> {
-                    String id = resultSet.getString(1);
-                    String status = resultSet.getString(2);
-                    String text = resultSet.getString(3);
-                    return new Task(id, status, text);
+                    String id = resultSet.getString("id");
+                    String status = resultSet.getString("status");
+                    String text = resultSet.getString("text");
+                    String createdAt = resultSet.getString("createdAt");
+                    return new Task(id, status, text, createdAt);
                 });
     }
 

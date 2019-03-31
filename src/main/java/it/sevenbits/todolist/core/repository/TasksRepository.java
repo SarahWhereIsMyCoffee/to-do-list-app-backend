@@ -3,8 +3,10 @@ package it.sevenbits.todolist.core.repository;
 import it.sevenbits.todolist.core.model.Task;
 import it.sevenbits.todolist.web.model.AddTaskRequest;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,10 +35,18 @@ public class TasksRepository implements ITasksRepository {
     public String addTask(final AddTaskRequest addTaskRequest) {
         UUID taskID = UUID.randomUUID();
         String taskStatus = "inbox";
+        Date dateNow = new Date();
+        SimpleDateFormat formatForDateNow = new SimpleDateFormat(
+                "E yyyy.MM.dd'T'H:mm:ss a zzz");
+
+        String createdAt = formatForDateNow.format(dateNow);
+
         taskMap.put(taskID.toString(),
                 new Task(taskID.toString(),
                         addTaskRequest.getText(),
-                        taskStatus));
+                        taskStatus,
+                        createdAt));
+
         return taskID.toString();
     }
 

@@ -37,21 +37,21 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/tasks")
 public class TasksController {
-    private final ITasksRepository tasksRepository;
+    private final ITasksRepository dataBaseTasksRepository;
     private final ITaskIDValidator taskIDValidator;
     private final ITaskStatusValidator taskStatusValidator;
 
     /**
      * Class constructor.
      *
-     * @param tasksRepository ITaskRepository instance.
+     * @param dataBaseTasksRepository ITaskRepository instance.
      * @param taskIDValidator ITaskIDValidator service instance.
      * @param taskStatusValidator ITaskStatusValidator service instance.
      */
-    public TasksController(final ITasksRepository tasksRepository,
+    public TasksController(final ITasksRepository dataBaseTasksRepository,
                            final ITaskIDValidator taskIDValidator,
                            final ITaskStatusValidator taskStatusValidator) {
-        this.tasksRepository = tasksRepository;
+        this.dataBaseTasksRepository = dataBaseTasksRepository;
         this.taskIDValidator = taskIDValidator;
         this.taskStatusValidator = taskStatusValidator;
     }
@@ -71,7 +71,7 @@ public class TasksController {
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .body(tasksRepository.getAllTasks());
+                .body(dataBaseTasksRepository.getAllTasks());
     }
 
     /**
@@ -88,7 +88,7 @@ public class TasksController {
     public ResponseEntity<Task> create(@Valid @RequestBody final AddTaskRequest addTaskRequest) {
         URI location = UriComponentsBuilder
                 .fromPath("/tasks/")
-                .path(String.valueOf(tasksRepository.addTask(addTaskRequest)))
+                .path(String.valueOf(dataBaseTasksRepository.addTask(addTaskRequest)))
                 .build()
                 .toUri();
 
@@ -112,7 +112,7 @@ public class TasksController {
             throw new InvalidTaskIDException();
         }
 
-        Task currentTask = tasksRepository.getTask(id);
+        Task currentTask = dataBaseTasksRepository.getTask(id);
         if (currentTask == null) {
             throw new TaskNotFoundException();
         }
@@ -137,11 +137,11 @@ public class TasksController {
             throw new InvalidTaskIDException();
         }
 
-        Task currentTask = tasksRepository.getTask(id);
+        Task currentTask = dataBaseTasksRepository.getTask(id);
         if (currentTask == null) {
             throw new TaskNotFoundException();
         }
-        tasksRepository.deleteTask(id);
+        dataBaseTasksRepository.deleteTask(id);
 
         return ResponseEntity
                 .ok()
@@ -177,16 +177,17 @@ public class TasksController {
             throw new InvalidTaskTextException();
         }
 
-        if (tasksRepository.getTask(id) == null) {
+        if (dataBaseTasksRepository.getTask(id) == null) {
             throw new TaskNotFoundException();
         }
 
-        tasksRepository.replaceTask(id, new Task(
+        dataBaseTasksRepository.replaceTask(id, new Task(
                         id,
                         Optional.ofNullable(updateTaskRequest.getText())
-                                .orElse(tasksRepository.getTask(id).getText()),
+                                .orElse(dataBaseTasksRepository.getTask(id).getText()),
                         Optional.ofNullable(updateTaskRequest.getStatus())
-                                .orElse(tasksRepository.getTask(id).getStatus())
+                                .orElse(dataBaseTasksRepository.getTask(id).getStatus()),
+                        dataBaseTasksRepository.getTask(id).getCreatedAt()
                 )
         );
 
