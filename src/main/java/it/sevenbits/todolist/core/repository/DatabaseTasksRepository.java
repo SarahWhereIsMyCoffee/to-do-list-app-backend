@@ -1,10 +1,11 @@
 package it.sevenbits.todolist.core.repository;
 
 import it.sevenbits.todolist.core.model.Task;
-import it.sevenbits.todolist.web.exceptions.UnavailableMethodException;
 import it.sevenbits.todolist.web.model.AddTaskRequest;
 import org.springframework.jdbc.core.JdbcOperations;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,15 +32,24 @@ public class DatabaseTasksRepository implements ITasksRepository {
     @Override
     public String addTask(final AddTaskRequest addTaskRequest) {
         String taskStatus = "inbox";
+        Date dateNow = new Date();
+        SimpleDateFormat formatForDateNow = new SimpleDateFormat(
+                "yyyy-MM-dd'T'H:mm:ss+00:00");
+
+        String createdAt = formatForDateNow.format(dateNow);
+
+
         Task task = new Task(UUID.randomUUID().toString(),
                 addTaskRequest.getText(),
-                taskStatus);
+                taskStatus,
+                createdAt);
 
         jdbcOperations.update(
-                "INSERT INTO task (id, status, text) VALUES (?, ?, ?)",
+                "INSERT INTO task_V1 (id, text, status, createdAt) VALUES (?, ?, ?, ?)",
                 task.getId(),
                 task.getText(),
-                task.getStatus()
+                task.getStatus(),
+                task.getCreatedAt()
         );
 
         return task.getId();
@@ -51,12 +61,13 @@ public class DatabaseTasksRepository implements ITasksRepository {
     @Override
     public List<Task> getAllTasks() {
         return jdbcOperations.query(
-                "SELECT id, status, text FROM task",
+                "SELECT id, text, status, createdAt FROM task_V1",
                 (resultSet, i) -> {
-                    String id = resultSet.getString(1);
-                    String status = resultSet.getString(2);
-                    String text = resultSet.getString(3);
-                    return new Task(id, status, text);
+                    String id = resultSet.getString("id");
+                    String status = resultSet.getString("status");
+                    String text = resultSet.getString("text");
+                    String createdAt = resultSet.getString("createdAt");
+                    return new Task(id, status, text, createdAt);
                 });
     }
 
@@ -69,12 +80,12 @@ public class DatabaseTasksRepository implements ITasksRepository {
     @Override
     public Task getTaskByID(final String id) {
         return jdbcOperations.queryForObject(
-                "SELECT id, text, status FROM task WHERE id = ?",
+                "SELECT id, text, status, createdAt FROM task_V1 WHERE id = ?",
                 (resultSet, i) -> {
-                    String taskID = resultSet.getString(1);
-                    String taskText = resultSet.getString(2);
-                    String taskStatus = resultSet.getString(3);
-                    return new Task(taskID, taskText, taskStatus);
+                    String status = resultSet.getString("status");
+                    String text = resultSet.getString("text");
+                    String createdAt = resultSet.getString("createdAt");
+                    return new Task(id, status, text, createdAt);
                 },
                 id);
     }
@@ -88,7 +99,7 @@ public class DatabaseTasksRepository implements ITasksRepository {
     @Override
     public Task deleteTask(final String id) {
         final Task task = getTaskByID(id);
-        jdbcOperations.update("DELETE FROM task WHERE id = ?", id);
+        jdbcOperations.update("DELETE FROM task_V1 WHERE id = ?", id);
 
         return task;
     }
@@ -104,7 +115,7 @@ public class DatabaseTasksRepository implements ITasksRepository {
     @Override
     public Task updateTask(final String id, final Task newTask) {
         jdbcOperations.update(
-                "UPDATE task SET text = ?, status = ? WHERE id = ?",
+                "UPDATE task_V1 SET text = ?, status = ? WHERE id = ?",
                 newTask.getText(),
                 newTask.getStatus(),
                 id);

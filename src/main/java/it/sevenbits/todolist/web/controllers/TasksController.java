@@ -186,7 +186,8 @@ public class TasksController {
                         Optional.ofNullable(updateTaskRequest.getText())
                                 .orElse(dataBaseTasksRepository.getTaskByID(id).getText()),
                         Optional.ofNullable(updateTaskRequest.getStatus())
-                                .orElse(dataBaseTasksRepository.getTaskByID(id).getStatus())
+                                .orElse(dataBaseTasksRepository.getTaskByID(id).getStatus()),
+                        dataBaseTasksRepository.getTaskByID(id).getCreatedAt()
                 )
         );
 
