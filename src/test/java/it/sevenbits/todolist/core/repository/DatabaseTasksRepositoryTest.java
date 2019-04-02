@@ -31,10 +31,6 @@ public class DatabaseTasksRepositoryTest {
 
     @Test
     public void addTask() {
-        //я не понимаю, почему ошибка
-        //описание ошибки ничего не дало
-        //напишите, пожалуйста, на елиадеми пару слов, в чём тут дело
-
         String expectedTaskText = "";
         AddTaskRequest addTaskRequest = new AddTaskRequest(expectedTaskText);
 
