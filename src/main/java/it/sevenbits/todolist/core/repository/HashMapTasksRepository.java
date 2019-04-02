@@ -15,13 +15,13 @@ import java.util.UUID;
 /**
  * Task ITasksRepository implementation.
  */
-public class TasksRepository implements ITasksRepository {
+public class HashMapTasksRepository implements ITasksRepository {
     private Map<String, Task> taskMap;
 
     /**
-     * Constructor of TasksRepository class.
+     * Constructor of HashMapTasksRepository class.
      */
-    public TasksRepository() {
+    public HashMapTasksRepository() {
         taskMap = new HashMap<>();
     }
 
@@ -32,7 +32,7 @@ public class TasksRepository implements ITasksRepository {
      * @return new "Task" model id.
      */
     @Override
-    public String addTask(final AddTaskRequest addTaskRequest) {
+    public Task addTask(final AddTaskRequest addTaskRequest) {
         UUID taskID = UUID.randomUUID();
         String taskStatus = "inbox";
         Date dateNow = new Date();
@@ -42,13 +42,13 @@ public class TasksRepository implements ITasksRepository {
         String createdAt = formatForDateNow.format(dateNow);
         String updatedAt = "-----";
 
-        taskMap.put(taskID.toString(),
-                new Task(taskID.toString(),
-                        addTaskRequest.getText(),
-                        taskStatus,
-                        createdAt,
-                        updatedAt));
-        return taskID.toString();
+        Task task = new Task(taskID.toString(),
+                addTaskRequest.getText(),
+                taskStatus,
+                createdAt,
+                updatedAt);
+        taskMap.put(taskID.toString(), task);
+        return task;
     }
 
     /**

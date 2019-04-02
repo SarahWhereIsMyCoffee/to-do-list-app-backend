@@ -11,7 +11,7 @@ import javax.sql.DataSource;
  * This class presents wraps Data source into the JdbcTemplate interface.
  */
 @Configuration
-public class TasksDatabaseConfig {
+public class DatabaseConfig {
     /**
      * This method returns JdbcTemplate instance we use to interaction with data base.
      * @param tasksDataSource DataSource instance we wrap.

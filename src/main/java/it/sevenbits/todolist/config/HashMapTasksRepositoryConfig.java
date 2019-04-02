@@ -1,7 +1,7 @@
 package it.sevenbits.todolist.config;
 
 import it.sevenbits.todolist.core.repository.ITasksRepository;
-import it.sevenbits.todolist.core.repository.TasksRepository;
+import it.sevenbits.todolist.core.repository.HashMapTasksRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  * Spring configuration file for ITaskRepository interface.
  */
 @Configuration
-public class TasksRepositoryConfig {
+public class HashMapTasksRepositoryConfig {
     /**
      * This method returns ITaskRepository instance.
      *
@@ -18,6 +18,6 @@ public class TasksRepositoryConfig {
      */
     @Bean
     public ITasksRepository tasksRepository() {
-        return new TasksRepository();
+        return new HashMapTasksRepository();
     }
 }

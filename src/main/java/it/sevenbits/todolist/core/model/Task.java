@@ -7,7 +7,6 @@ import javax.validation.constraints.NotBlank;
 
 /**
  * This class presents a model used for creating of JSON objects.
- *
  */
 public class Task {
     /**
@@ -35,18 +34,20 @@ public class Task {
     @NotBlank
     private final String createdAt;
 
-
     /**
      *
      */
     @NotBlank
     private final String updatedAt;
+
     /**
      * Model constructor.
      *
      * @param id Task id (must be valid UUID).
      * @param text Task text (can not be null, empty or whitespace string).
      * @param status Task status (must be "inbox" or "done").
+     * @param createdAt String value of task creating time.
+     * @param updatedAt String value of Task updating time.
      */
     public Task(final String id,
                 final String text,
@@ -90,12 +91,16 @@ public class Task {
     /**
      * Task createdAt field getter.
      *
-     * @return Task createdAt field.
+     * @return String createdAt field value.
      */
     public String getCreatedAt() {
         return createdAt;
     }
 
+    /**
+     *
+     * @return String updatedAt field value.
+     */
     public String getUpdatedAt() {
         return updatedAt;
     }

@@ -15,7 +15,7 @@ public interface ITasksRepository {
      * @param addTaskRequest "Task" model
      * @return new "Task" model id.
      */
-    String addTask(final AddTaskRequest addTaskRequest);
+    Task addTask(final AddTaskRequest addTaskRequest);
 
     /**
      * This method returns all the objects from "Task" repository.

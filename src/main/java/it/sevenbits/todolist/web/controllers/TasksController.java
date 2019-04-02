@@ -85,10 +85,10 @@ public class TasksController {
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public ResponseEntity<Task> create(@Valid @RequestBody final AddTaskRequest addTaskRequest) {
+    public ResponseEntity<Task> createTask(@Valid @RequestBody final AddTaskRequest addTaskRequest) {
         URI location = UriComponentsBuilder
                 .fromPath("/tasks/")
-                .path(String.valueOf(dataBaseTasksRepository.addTask(addTaskRequest)))
+                .path(String.valueOf(dataBaseTasksRepository.addTask(addTaskRequest).getId()))
                 .build()
                 .toUri();
 
@@ -161,8 +161,8 @@ public class TasksController {
      */
     @PatchMapping(value = "/{id}",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> patchTask(@PathVariable("id") final String id,
-                                            @Valid @RequestBody final UpdateTaskRequest updateTaskRequest) {
+    public ResponseEntity<Task> updateTask(@PathVariable("id") final String id,
+                                             @Valid @RequestBody final UpdateTaskRequest updateTaskRequest) {
         if (!taskIDValidator.isValidTaskID(id)) {
             throw new InvalidTaskIDException();
         }

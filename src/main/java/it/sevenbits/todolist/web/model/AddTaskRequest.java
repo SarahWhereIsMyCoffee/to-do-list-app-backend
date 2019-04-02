@@ -3,12 +3,15 @@ package it.sevenbits.todolist.web.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.constraints.NotBlank;
+
 
 /**
  * This model separates query logic of adding new task.
  * from application business logic.
  */
 public class AddTaskRequest {
+    @NotBlank
     private String text;
 
     /**

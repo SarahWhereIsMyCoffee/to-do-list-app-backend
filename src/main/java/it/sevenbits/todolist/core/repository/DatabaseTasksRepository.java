@@ -16,7 +16,7 @@ public class DatabaseTasksRepository implements ITasksRepository {
     private final JdbcOperations jdbcOperations;
 
     /**
-     * Constructor of TasksRepository class.
+     * Constructor of HashMapTasksRepository class.
      *
      * @param jdbcOperations JdbcOperations instance that presents an interface contains Data source instance
      */
@@ -31,14 +31,14 @@ public class DatabaseTasksRepository implements ITasksRepository {
      * @return new "Task" model id.
      */
     @Override
-    public String addTask(final AddTaskRequest addTaskRequest) {
+    public Task addTask(final AddTaskRequest addTaskRequest) {
         String taskStatus = "inbox";
         Date dateNow = new Date();
         SimpleDateFormat formatForDateNow = new SimpleDateFormat(
                 "yyyy-MM-dd'T'H:mm:ss+00:00");
 
         String createdAt = formatForDateNow.format(dateNow);
-        String updatedAt = "-----";
+        String updatedAt = createdAt;
 
 
         Task task = new Task(UUID.randomUUID().toString(),
@@ -56,7 +56,7 @@ public class DatabaseTasksRepository implements ITasksRepository {
                 task.getUpdatedAt()
         );
 
-        return task.getId();
+        return task;
     }
 
     /**
@@ -75,8 +75,8 @@ public class DatabaseTasksRepository implements ITasksRepository {
                     String createdAt = resultSet.getString("createdAt");
                     String updatedAt = resultSet.getString("updatedAt");
                     return new Task(id,
-                            status,
                             text,
+                            status,
                             createdAt,
                             updatedAt);
                 });
