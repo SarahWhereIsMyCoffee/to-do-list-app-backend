@@ -46,7 +46,7 @@ public class DatabaseTasksRepository implements ITasksRepository {
                 createdAt);
 
         jdbcOperations.update(
-                "INSERT INTO task_V1 (id, status, text, createdAt) VALUES (?, ?, ?, ?)",
+                "INSERT INTO task_V1 (id, text, status, createdAt) VALUES (?, ?, ?, ?)",
                 task.getId(),
                 task.getText(),
                 task.getStatus(),
@@ -61,15 +61,18 @@ public class DatabaseTasksRepository implements ITasksRepository {
      */
     @Override
     public List<Task> getAllTasks() {
+        String inboxStatus = "inbox";
+
         return jdbcOperations.query(
-                "SELECT id, status, text, createdAt FROM task_V1",
+                "SELECT id, text, status, createdAt FROM task_V1 WHERE status = ?",
                 (resultSet, i) -> {
                     String id = resultSet.getString("id");
-                    String status = resultSet.getString("status");
                     String text = resultSet.getString("text");
+                    String status = resultSet.getString("status");
                     String createdAt = resultSet.getString("createdAt");
-                    return new Task(id, status, text, createdAt);
-                });
+                    return new Task(id, text, status, createdAt);
+                },
+                inboxStatus);
     }
 
     /**
