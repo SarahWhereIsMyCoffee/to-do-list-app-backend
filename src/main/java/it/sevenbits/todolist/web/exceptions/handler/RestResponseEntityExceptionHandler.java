@@ -58,7 +58,7 @@ public class RestResponseEntityExceptionHandler
                 ex,
                 null,
                 new HttpHeaders(),
-                HttpStatus.BAD_REQUEST,
+                HttpStatus.NOT_FOUND,
                 request
         );
     }

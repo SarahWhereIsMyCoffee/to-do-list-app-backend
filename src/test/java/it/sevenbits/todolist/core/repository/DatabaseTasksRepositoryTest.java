@@ -41,13 +41,16 @@ public class DatabaseTasksRepositoryTest {
 
     @Test
     public void getAllTasks() {
+        String taskStatus = "inbox";
         List<Task> mockListBooks = mock(List.class);
-        when(mockJdbcOperations.query(anyString(), any(RowMapper.class))).thenReturn(mockListBooks);
+
+        when(mockJdbcOperations.query(anyString(), any(RowMapper.class), anyString())).thenReturn(mockListBooks);
 
         List<Task> expectedList = databaseTasksRepository.getAllTasks();
         verify(mockJdbcOperations, times(1)).query(
-                eq("SELECT id, text, status, createdAt, updatedAt FROM task_V2"),
-                any(RowMapper.class)
+                eq("SELECT id, text, status, createdAt, updatedAt FROM task_V2 WHERE status = ?"),
+                any(RowMapper.class),
+                eq(taskStatus)
         );
 
         Assert.assertSame(expectedList, mockListBooks);
