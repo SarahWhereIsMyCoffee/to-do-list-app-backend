@@ -40,7 +40,6 @@ public class DatabaseTasksRepository implements ITasksRepository {
         String createdAt = formatForDateNow.format(dateNow);
         String updatedAt = createdAt;
 
-
         Task task = new Task(UUID.randomUUID().toString(),
                 addTaskRequest.getText(),
                 taskStatus,
