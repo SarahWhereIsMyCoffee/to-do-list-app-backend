@@ -60,19 +60,17 @@ public class DatabaseTasksRepository implements ITasksRepository {
      * @return "Task" list.
      */
     @Override
-    public List<Task> getAllTasks() {
-        String inboxStatus = "inbox";
+    public List<Task> getAllTasks(String status) {
 
         return jdbcOperations.query(
                 "SELECT id, text, status, createdAt FROM task_V1 WHERE status = ?",
                 (resultSet, i) -> {
                     String id = resultSet.getString("id");
                     String text = resultSet.getString("text");
-                    String status = resultSet.getString("status");
                     String createdAt = resultSet.getString("createdAt");
                     return new Task(id, text, status, createdAt);
                 },
-                inboxStatus);
+                status);
     }
 
     /**
