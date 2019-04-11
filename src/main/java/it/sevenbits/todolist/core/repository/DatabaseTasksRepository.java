@@ -65,15 +65,13 @@ public class DatabaseTasksRepository implements ITasksRepository {
      * @return "Task" list.
      */
     @Override
-    public List<Task> getAllTasks() {
-        String inboxStatus = "inbox";
+    public List<Task> getAllTasks(String status) {
 
         return jdbcOperations.query(
                 "SELECT id, text, status, createdAt, updatedAt FROM task_V2 WHERE status = ?",
                 (resultSet, i) -> {
                     String id = resultSet.getString("id");
                     String text = resultSet.getString("text");
-                    String status = resultSet.getString("status");
                     String createdAt = resultSet.getString("createdAt");
                     String updatedAt = resultSet.getString("updatedAt");
                     return new Task(id,
@@ -82,7 +80,7 @@ public class DatabaseTasksRepository implements ITasksRepository {
                             createdAt,
                             updatedAt);
                 },
-                inboxStatus);
+                status);
     }
 
     /**
