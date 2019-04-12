@@ -21,7 +21,10 @@ public interface ITasksRepository {
      * This method returns all the objects from "Task" repository.
      * @return "Task" list.
      */
-    List<Task> getAllTasks();
+    List<Task> getAllTasks(final String status,
+                           final String order,
+                           final short page,
+                           final short size);
 
     /**
      * This method returns a "Task" model from repository taken by ID.

@@ -18,7 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
-
+/*
 public class DatabaseTasksRepositoryTest {
     private JdbcOperations mockJdbcOperations;
     private DatabaseTasksRepository databaseTasksRepository;
@@ -107,3 +107,4 @@ public class DatabaseTasksRepositoryTest {
         Assert.assertSame(expectedTask, mockTask);
     }
 }
+*/

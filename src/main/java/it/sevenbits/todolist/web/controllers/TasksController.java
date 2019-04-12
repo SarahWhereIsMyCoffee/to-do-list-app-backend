@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -67,11 +68,20 @@ public class TasksController {
      */
     @GetMapping
     @ResponseBody
-    public ResponseEntity<List<Task>> getAllTasks() {
+    public ResponseEntity<List<Task>> getAllTasks(
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "order", required = false) String order,
+            @RequestParam(value = "page", required = false) Short page,
+            @RequestParam(value = "size", required = false) Short size) {
+
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .body(dataBaseTasksRepository.getAllTasks());
+                .body(dataBaseTasksRepository.getAllTasks(
+                        status,
+                        order,
+                        page,
+                        size));
     }
 
     /**

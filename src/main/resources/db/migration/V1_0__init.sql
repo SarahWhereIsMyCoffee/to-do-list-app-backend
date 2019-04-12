@@ -1,6 +1,6 @@
-CREATE TABLE tasks_table (
-  id varchar PRIMARY KEY,
-  text varchar NOT NULL,
-  status varchar NOT NULL,
-  createdAt timestamp NOT NULL
+CREATE TABLE task
+(
+    id     char(36) PRIMARY KEY,
+    text   varchar NOT NULL,
+    status varchar NOT NULL
 );

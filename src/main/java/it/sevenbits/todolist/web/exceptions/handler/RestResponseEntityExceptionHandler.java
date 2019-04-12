@@ -1,5 +1,6 @@
 package it.sevenbits.todolist.web.exceptions.handler;
 
+import it.sevenbits.todolist.web.exceptions.InvalidPageOrderException;
 import it.sevenbits.todolist.web.exceptions.InvalidTaskIDException;
 import it.sevenbits.todolist.web.exceptions.InvalidTaskStatusException;
 import it.sevenbits.todolist.web.exceptions.InvalidTaskTextException;
@@ -29,8 +30,9 @@ public class RestResponseEntityExceptionHandler
      */
     @ExceptionHandler
             (value = {
-            InvalidTaskStatusException.class,
-            InvalidTaskTextException.class})
+                    InvalidTaskStatusException.class,
+                    InvalidTaskTextException.class,
+                    InvalidPageOrderException.class})
     protected ResponseEntity<Object> invalidStatus(
             final RuntimeException ex, final WebRequest request) {
 
