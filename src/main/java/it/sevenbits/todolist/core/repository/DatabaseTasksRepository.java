@@ -1,5 +1,8 @@
 package it.sevenbits.todolist.core.repository;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.sevenbits.todolist.core.model.Task;
@@ -26,6 +29,7 @@ public class DatabaseTasksRepository implements ITasksRepository {
     private final List<String> statusList;
     private final List<String> orderList;
     private final JsonNodeFactory jsonNodeFactory;
+    private final ObjectMapper objectMapper;
 
     /**
      * Constructor of HashMapTasksRepository class.
@@ -36,6 +40,7 @@ public class DatabaseTasksRepository implements ITasksRepository {
         this.jdbcOperations = jdbcOperations;
 
         jsonNodeFactory = JsonNodeFactory.instance;
+        objectMapper = new ObjectMapper();
 
         statusList = new ArrayList<>();
         orderList = new ArrayList<>();
@@ -57,13 +62,12 @@ public class DatabaseTasksRepository implements ITasksRepository {
                 "yyyy-MM-dd'T'H:mm:ss+00:00");
 
         String createdAt = formatForDateNow.format(dateNow);
-        String updatedAt = createdAt;
 
         Task task = new Task(UUID.randomUUID().toString(),
                 addTaskRequest.getText(),
                 taskStatus,
                 createdAt,
-                updatedAt);
+                createdAt);
 
         jdbcOperations.update(
                 "INSERT INTO task (id, text, status, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)",
@@ -83,25 +87,28 @@ public class DatabaseTasksRepository implements ITasksRepository {
      * @return "Task" list.
      */
     @Override
-    public List<Task> getAllTasks(final String status,
-                                  final String order,
-                                  final short page,
-                                  final short size) {
+    public JsonNode getAllTasks(final String status,
+                                final String order,
+                                final Short page,
+                                final Short size) {
 
-        if (!statusList.contains(status)) {
-            throw new InvalidTaskStatusException();
-        }
-        if (!orderList.contains(order)) {
-            throw new InvalidPageOrderException();
-        }
+        final String statusToUse = Optional.ofNullable(status)
+                .orElse("inbox");
+        final String orderToUse = Optional.ofNullable(order)
+                .orElse("desc");
+        final short pageToUse = Optional.ofNullable(page)
+                .orElse((short) 1);
+        final short sizeToUse = Optional.ofNullable(size)
+                .orElse((short) 25);
 
-        int skippedTasksCount = (page - 1) * size;
-        int totalTaskCount = getTotalTaskCount(status);
-        int
+        int totalTasksCount = getTotalTaskCount(statusToUse);
+        int totalPagesCount = (totalTasksCount % sizeToUse > 0)
+                ? totalTasksCount/sizeToUse + 1 : totalTasksCount/sizeToUse;
+        int skippedTasksCount = sizeToUse * (pageToUse - 1);
 
         ObjectNode rootNode = jsonNodeFactory.objectNode();
         ObjectNode metaNode = rootNode.putObject("_meta");
-        ObjectNode tasksNode = rootNode.putObject("tasks");
+        ArrayNode tasksNode = rootNode.putArray("tasks");
 
         final UriComponents uriPartBeforePageNumber = UriComponentsBuilder.fromPath("/tasks")
                 .queryParam("status", status)
@@ -111,36 +118,47 @@ public class DatabaseTasksRepository implements ITasksRepository {
                 .queryParam("size", size)
                 .build();
 
+        int numberOfPreviousPage = (pageToUse == 1) ? 1 : (pageToUse - 1);
+        int numberOfNextPage = (totalPagesCount == 1) ? 1 : (pageToUse + 1);
+
         String nextPageLink = UriComponentsBuilder.newInstance()
                 .uriComponents(uriPartBeforePageNumber)
-                .queryParam("page", page + 1)
+                .queryParam("page", numberOfNextPage)
+                .uriComponents(uriPartAfterPageNumber)
                 .build()
                 .toString();
-        String nextPageLink = UriComponentsBuilder.newInstance()
+        String previousPageLink = UriComponentsBuilder.newInstance()
                 .uriComponents(uriPartBeforePageNumber)
-                .queryParam("page", page + 1)
+                .queryParam("page", numberOfPreviousPage)
+                .uriComponents(uriPartAfterPageNumber)
                 .build()
                 .toString();
-        String nextPageLink = UriComponentsBuilder.newInstance()
+        String firstPageLink = UriComponentsBuilder.newInstance()
                 .uriComponents(uriPartBeforePageNumber)
-                .queryParam("page", page + 1)
+                .queryParam("page", 1)
+                .uriComponents(uriPartAfterPageNumber)
                 .build()
                 .toString();
-        String nextPageLink = UriComponentsBuilder.newInstance()
+        String lastPageLink = UriComponentsBuilder.newInstance()
                 .uriComponents(uriPartBeforePageNumber)
-                .queryParam("page", page + 1)
+                .queryParam("page", totalPagesCount)
+                .uriComponents(uriPartAfterPageNumber)
                 .build()
                 .toString();
 
-        metaNode.put("total", totalTaskCount)
-                .put("page", page)
-                .put("size", size)
-                .put("next", nextPageLink);
+        metaNode.put("total", totalTasksCount)
+                .put("page", pageToUse)
+                .put("size", sizeToUse)
+                .put("next", nextPageLink)
+                .put("prev", previousPageLink)
+                .put("first", firstPageLink)
+                .put("last", lastPageLink);
 
+        final List<Task> taskArrayList = new ArrayList<>();
 
-        return jdbcOperations.query(
-                "SELECT id, text, status, createdAt, updatedAt FROM task WHERE status = ?" +
-                        "ORDER BY createdAt " + order + " OFFSET ? LIMIT ?",
+        taskArrayList.addAll(jdbcOperations.query(
+                "SELECT id, text, status, createdAt, updatedAt FROM task WHERE status = ? " +
+                        "ORDER BY createdAt " + orderToUse + " OFFSET ? LIMIT ?",
                 (resultSet, i) -> {
                     String id = resultSet.getString("id");
                     String text = resultSet.getString("text");
@@ -149,13 +167,20 @@ public class DatabaseTasksRepository implements ITasksRepository {
                     return new Task(
                             id,
                             text,
-                            status,
+                            statusToUse,
                             createdAt,
                             updatedAt);
                 },
-                status,
+                statusToUse,
                 skippedTasksCount,
-                size);
+                sizeToUse)
+        );
+
+        for (Task currentTask : taskArrayList) {
+            tasksNode.add(objectMapper.valueToTree(currentTask));
+        }
+
+        return rootNode;
     }
 
     /**

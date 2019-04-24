@@ -33,6 +33,6 @@ public class TaskStatusConstraintValidator implements ConstraintValidator<TaskSt
      */
     @Override
     public boolean isValid(final String status, final ConstraintValidatorContext constraintValidatorContext) {
-        return taskStatusValidator.isValidStatus(status);
+        return taskStatusValidator.isValidOrder(status);
     }
 }

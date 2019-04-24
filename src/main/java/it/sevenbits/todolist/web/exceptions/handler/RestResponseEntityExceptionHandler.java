@@ -1,11 +1,6 @@
 package it.sevenbits.todolist.web.exceptions.handler;
 
-import it.sevenbits.todolist.web.exceptions.InvalidPageOrderException;
-import it.sevenbits.todolist.web.exceptions.InvalidTaskIDException;
-import it.sevenbits.todolist.web.exceptions.InvalidTaskStatusException;
-import it.sevenbits.todolist.web.exceptions.InvalidTaskTextException;
-import it.sevenbits.todolist.web.exceptions.TaskNotFoundException;
-import it.sevenbits.todolist.web.exceptions.UnavailableMethodException;
+import it.sevenbits.todolist.web.exceptions.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,8 +27,10 @@ public class RestResponseEntityExceptionHandler
             (value = {
                     InvalidTaskStatusException.class,
                     InvalidTaskTextException.class,
-                    InvalidPageOrderException.class})
-    protected ResponseEntity<Object> invalidStatus(
+                    InvalidPageOrderException.class,
+                    InvalidPageSizeException.class
+            })
+    protected ResponseEntity<Object> badRequest(
             final RuntimeException ex, final WebRequest request) {
 
         return handleExceptionInternal(
@@ -52,28 +49,11 @@ public class RestResponseEntityExceptionHandler
      * @return Response sent to request source. It contains information about content type and HTTP status.
      */
     @ExceptionHandler
-            (value = {InvalidTaskIDException.class})
-    protected ResponseEntity<Object> invalidID(
-            final RuntimeException ex, final WebRequest request) {
-
-        return handleExceptionInternal(
-                ex,
-                null,
-                new HttpHeaders(),
-                HttpStatus.NOT_FOUND,
-                request
-        );
-    }
-    /**
-     * Method that handles TaskNotFoundException exceptions.
-     *
-     * @param ex Instance of exception to handle.
-     * @param request WebRequest instance.
-     * @return Response sent to request source. It contains information about content type and HTTP status.
-     */
-    @ExceptionHandler
-            (value = {TaskNotFoundException.class})
-    protected ResponseEntity<Object> invalidTask(
+            (value = {
+                    InvalidTaskIDException.class,
+                    TaskNotFoundException.class
+            })
+    protected ResponseEntity<Object> not_found(
             final RuntimeException ex, final WebRequest request) {
 
         return handleExceptionInternal(
@@ -93,8 +73,10 @@ public class RestResponseEntityExceptionHandler
      * @return Response sent to request source. It contains information about content type and HTTP status.
      */
     @ExceptionHandler
-            (value = {UnavailableMethodException.class})
-    protected ResponseEntity<Object> unavailableMethod(
+            (value = {
+                    UnavailableMethodException.class
+            })
+    protected ResponseEntity<Object> forbidden(
             final RuntimeException ex, final WebRequest request) {
 
         return handleExceptionInternal(

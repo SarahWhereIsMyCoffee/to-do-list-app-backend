@@ -44,7 +44,7 @@ public class TaskControllerTest {
                 taskStatusValidator);
 
         when(taskIDValidator.isValidTaskID(anyString())).thenReturn(true);
-        when(taskStatusValidator.isValidStatus(anyString())).thenReturn(true);
+        when(taskStatusValidator.isValidOrder(anyString())).thenReturn(true);
     }
 
     @Test

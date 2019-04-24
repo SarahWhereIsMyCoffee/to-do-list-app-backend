@@ -1,5 +1,6 @@
 package it.sevenbits.todolist.core.repository;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import it.sevenbits.todolist.core.model.Task;
 import it.sevenbits.todolist.web.model.AddTaskRequest;
 
@@ -21,10 +22,10 @@ public interface ITasksRepository {
      * This method returns all the objects from "Task" repository.
      * @return "Task" list.
      */
-    List<Task> getAllTasks(final String status,
-                           final String order,
-                           final short page,
-                           final short size);
+    JsonNode getAllTasks(final String status,
+                         final String order,
+                         final Short page,
+                         final Short size);
 
     /**
      * This method returns a "Task" model from repository taken by ID.

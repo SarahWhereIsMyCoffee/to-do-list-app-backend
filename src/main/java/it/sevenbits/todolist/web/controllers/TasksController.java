@@ -1,11 +1,10 @@
 package it.sevenbits.todolist.web.controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import it.sevenbits.todolist.core.model.Task;
 import it.sevenbits.todolist.core.repository.ITasksRepository;
-import it.sevenbits.todolist.web.exceptions.InvalidTaskStatusException;
-import it.sevenbits.todolist.web.exceptions.InvalidTaskTextException;
-import it.sevenbits.todolist.web.exceptions.TaskNotFoundException;
-import it.sevenbits.todolist.web.exceptions.InvalidTaskIDException;
+import it.sevenbits.todolist.core.validation.order.IPageOrderValidator;
+import it.sevenbits.todolist.web.exceptions.*;
 import it.sevenbits.todolist.web.model.AddTaskRequest;
 import it.sevenbits.todolist.web.model.UpdateTaskRequest;
 import it.sevenbits.todolist.core.validation.id.service.ITaskIDValidator;
@@ -27,7 +26,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -41,6 +39,7 @@ public class TasksController {
     private final ITasksRepository dataBaseTasksRepository;
     private final ITaskIDValidator taskIDValidator;
     private final ITaskStatusValidator taskStatusValidator;
+    private final IPageOrderValidator pageOrderValidator;
 
     /**
      * Class constructor.
@@ -51,10 +50,12 @@ public class TasksController {
      */
     public TasksController(final ITasksRepository dataBaseTasksRepository,
                            final ITaskIDValidator taskIDValidator,
-                           final ITaskStatusValidator taskStatusValidator) {
+                           final ITaskStatusValidator taskStatusValidator,
+                           final IPageOrderValidator pageOrderValidator) {
         this.dataBaseTasksRepository = dataBaseTasksRepository;
         this.taskIDValidator = taskIDValidator;
         this.taskStatusValidator = taskStatusValidator;
+        this.pageOrderValidator = pageOrderValidator;
     }
 
     /**
@@ -68,11 +69,23 @@ public class TasksController {
      */
     @GetMapping
     @ResponseBody
-    public ResponseEntity<List<Task>> getAllTasks(
-            @RequestParam(value = "status", required = false) String status,
-            @RequestParam(value = "order", required = false) String order,
-            @RequestParam(value = "page", required = false) Short page,
-            @RequestParam(value = "size", required = false) Short size) {
+    public ResponseEntity<JsonNode> getAllTasks(
+            @RequestParam(value = "status", required = false) final String status,
+            @RequestParam(value = "order", required = false) final String order,
+            @RequestParam(value = "page", required = false) final Short page,
+            @RequestParam(value = "size", required = false) final Short size) {
+
+        final int pageMinTasksCount = 10;
+        final int pageMaxTasksCount = 50;
+        if (!taskStatusValidator.isValidOrder(status)) {
+            throw new InvalidTaskStatusException();
+        }
+        if (!pageOrderValidator.isValidOrder(order)) {
+            throw new InvalidPageOrderException();
+        }
+        if (size != null && (size < pageMinTasksCount || size > pageMaxTasksCount)) {
+            throw new InvalidPageSizeException();
+        }
 
         return ResponseEntity
                 .ok()
@@ -81,7 +94,8 @@ public class TasksController {
                         status,
                         order,
                         page,
-                        size));
+                        size)
+                );
     }
 
     /**
@@ -178,7 +192,7 @@ public class TasksController {
         }
 
         if (updateTaskRequest.getStatus() != null
-                && !taskStatusValidator.isValidStatus(updateTaskRequest.getStatus())) {
+                && !taskStatusValidator.isValidOrder(updateTaskRequest.getStatus())) {
             throw new InvalidTaskStatusException();
         }
 

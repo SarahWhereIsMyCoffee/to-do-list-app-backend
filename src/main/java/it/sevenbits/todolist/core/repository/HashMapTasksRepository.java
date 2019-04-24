@@ -1,5 +1,6 @@
 package it.sevenbits.todolist.core.repository;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import it.sevenbits.todolist.core.model.Task;
 import it.sevenbits.todolist.web.model.AddTaskRequest;
 
@@ -56,11 +57,11 @@ public class HashMapTasksRepository implements ITasksRepository {
      * @return "Task" list.
      */
     @Override
-    public List<Task> getAllTasks(final String status,
-                                  final String order,
-                                  final short page,
-                                  final short size) {
-        return Collections.unmodifiableList(new ArrayList<>(taskMap.values()));
+    public JsonNode getAllTasks(final String status,
+                                final String order,
+                                final Short page,
+                                final Short size) {
+        return null;
     }
 
     /**
