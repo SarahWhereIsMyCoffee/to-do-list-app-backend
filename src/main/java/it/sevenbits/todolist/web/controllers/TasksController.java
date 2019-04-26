@@ -81,7 +81,7 @@ public class TasksController {
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .body(dataBaseTasksRepository.getAllTasks(status));
+                .body(dataBaseTasksRepository.getAllTasks(taskStatus));
     }
 
     /**

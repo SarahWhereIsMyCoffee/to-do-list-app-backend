@@ -13,7 +13,7 @@ import javax.sql.DataSource;
  * Configuration file for the Data source.
  */
 @Configuration
-public class TasksDataSourceConfig {
+public class DataSourceConfig {
     /**
      * This method returns Data source instance.
      * @return Data source instance

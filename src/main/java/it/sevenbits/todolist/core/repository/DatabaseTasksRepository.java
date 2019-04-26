@@ -4,6 +4,7 @@ import it.sevenbits.todolist.core.model.Task;
 import it.sevenbits.todolist.web.exceptions.UnavailableMethodException;
 import it.sevenbits.todolist.web.model.AddTaskRequest;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,13 +15,13 @@ import java.util.UUID;
  * This class presents a repository that uses PostgreSQL.
  */
 public class DatabaseTasksRepository implements ITasksRepository {
-    private final JdbcOperations jdbcOperations;
+        private final JdbcTemplate jdbcOperations;
 
     /**
-     * Constructor of TasksRepository class.
+     * Constructor of DatabaseTasksRepository class.
      * @param jdbcOperations JdbcOperations instance that presents an interface contains Data source instance
      */
-    public DatabaseTasksRepository(final JdbcOperations jdbcOperations) {
+    public DatabaseTasksRepository(final JdbcTemplate jdbcOperations) {
         this.jdbcOperations = jdbcOperations;
     }
 
@@ -46,7 +47,7 @@ public class DatabaseTasksRepository implements ITasksRepository {
                 createdAt);
 
         jdbcOperations.update(
-                "INSERT INTO task_V1 (id, text, status, createdAt) VALUES (?, ?, ?, ?)",
+                "INSERT INTO task (id, text, status, createdAt) VALUES (?, ?, ?, ?)",
                 task.getId(),
                 task.getText(),
                 task.getStatus(),
@@ -63,7 +64,7 @@ public class DatabaseTasksRepository implements ITasksRepository {
     public List<Task> getAllTasks(String status) {
 
         return jdbcOperations.query(
-                "SELECT id, text, status, createdAt FROM task_V1 WHERE status = ?",
+                "SELECT id, text, status, createdAt FROM task WHERE status = ?",
                 (resultSet, i) -> {
                     String id = resultSet.getString("id");
                     String text = resultSet.getString("text");
